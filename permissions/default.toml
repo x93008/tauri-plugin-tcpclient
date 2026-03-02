@@ -1,0 +1,10 @@
+[default]
+description = "Default permissions for the TCP client plugin"
+permissions = [
+    "allow-connect",
+    "allow-connect-with-bind",
+    "allow-disconnect",
+    "allow-send",
+    "allow-is-connected",
+    "allow-get-connections",
+]
