@@ -56,15 +56,11 @@ fn is_timeout_error(e: &std::io::Error) -> bool {
 impl<R: Runtime> Tcpclient<R> {
     /// Connect to a TCP server
     pub async fn connect(&self, id: String, endpoint: String) -> Result<()> {
-        let mut connections = self.connections.write().await;
-
         // Remove existing connection if exists
-        if let Some(conn) = connections.get(&id) {
+        if let Some(conn) = self.connections.read().await.get(&id) {
             conn.task.abort();
-            connections.remove(&id);
-            drop(connections);
+            self.connections.write().await.remove(&id);
             tokio::time::sleep(Duration::from_millis(100)).await;
-            connections = self.connections.write().await;
         }
 
         // Establish connection
@@ -82,9 +78,9 @@ impl<R: Runtime> Tcpclient<R> {
             },
         );
 
-        // Spawn read task
+        // Clone for the spawn task
         let app = self.app.clone();
-        let connections = self.connections.clone();
+        let connections_clone = self.connections.clone();
         let tcp_id = id.clone();
         let endpoint_clone = endpoint.clone();
         let task = tokio::task::spawn(async move {
@@ -103,7 +99,7 @@ impl<R: Runtime> Tcpclient<R> {
                                 },
                             },
                         );
-                        connections.write().await.remove(&tcp_id);
+                        connections_clone.write().await.remove(&tcp_id);
                         break;
                     }
                     Ok(len) => {
@@ -139,14 +135,15 @@ impl<R: Runtime> Tcpclient<R> {
                                 },
                             },
                         );
-                        connections.write().await.remove(&tcp_id);
+                        connections_clone.write().await.remove(&tcp_id);
                         break;
                     }
                 }
             }
         });
 
-        connections.insert(
+        // Insert the new connection
+        self.connections.write().await.insert(
             id,
             TcpConnection {
                 task,
@@ -165,15 +162,11 @@ impl<R: Runtime> Tcpclient<R> {
         local_addr: String,
         endpoint: String,
     ) -> Result<()> {
-        let mut connections = self.connections.write().await;
-
         // Remove existing connection if exists
-        if let Some(conn) = connections.get(&id) {
+        if let Some(conn) = self.connections.read().await.get(&id) {
             conn.task.abort();
-            connections.remove(&id);
-            drop(connections);
+            self.connections.write().await.remove(&id);
             tokio::time::sleep(Duration::from_millis(100)).await;
-            connections = self.connections.write().await;
         }
 
         // Resolve addresses
@@ -211,9 +204,9 @@ impl<R: Runtime> Tcpclient<R> {
             },
         );
 
-        // Spawn read task
+        // Clone for the spawn task
         let app = self.app.clone();
-        let connections = self.connections.clone();
+        let connections_clone = self.connections.clone();
         let tcp_id = id.clone();
         let endpoint_clone = endpoint.clone();
         let task = tokio::task::spawn(async move {
@@ -231,7 +224,7 @@ impl<R: Runtime> Tcpclient<R> {
                                 },
                             },
                         );
-                        connections.write().await.remove(&tcp_id);
+                        connections_clone.write().await.remove(&tcp_id);
                         break;
                     }
                     Ok(len) => {
@@ -265,14 +258,15 @@ impl<R: Runtime> Tcpclient<R> {
                                 },
                             },
                         );
-                        connections.write().await.remove(&tcp_id);
+                        connections_clone.write().await.remove(&tcp_id);
                         break;
                     }
                 }
             }
         });
 
-        connections.insert(
+        // Insert the new connection
+        self.connections.write().await.insert(
             id,
             TcpConnection {
                 task,
