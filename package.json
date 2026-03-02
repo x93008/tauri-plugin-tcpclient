@@ -1,15 +1,12 @@
 {
-  "name": "@x93008/plugin-tcpclient",
-  "version": "0.2.0",
+  "name": "tauri-plugin-tcpclient-api",
+  "version": "0.1.0",
   "author": "x93008",
   "description": "A Tauri plugin for TCP client connections",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/x93008/tauri-plugin-tcpclient"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "type": "module",
   "types": "./dist-js/index.d.ts",
