@@ -1,5 +1,5 @@
 {
-  "name": "tauri-plugin-tcpclient-api",
+  "name": "tauri-plugin-tcpclient",
   "version": "0.1.0",
   "author": "x93008",
   "description": "A Tauri plugin for TCP client connections",
