@@ -1,6 +1,6 @@
 {
   "name": "@x93008/plugin-tcpclient",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "x93008",
   "description": "A Tauri plugin for TCP client connections",
   "license": "MIT",
