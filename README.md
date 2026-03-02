@@ -29,13 +29,18 @@ Add to your `src-tauri/Cargo.toml`:
 
 ```toml
 [dependencies]
-tauri-plugin-tcpclient = "0.1"
+tauri-plugin-tcpclient = { git = "https://github.com/x93008/tauri-plugin-tcpclient" }
+```
+or
+```toml
+[dependencies]
+tauri-plugin-tcpclient = "0.2"
 ```
 
 ### JavaScript
 
 ```sh
-npm install @x93008/plugin-tcpclient
+npm install tauri-plugin-tcpclient
 ```
 
 ## Usage
@@ -64,7 +69,7 @@ import {
   isConnected,
   getConnections,
   decodeMessage,
-} from '@x93008/plugin-tcpclient';
+} from 'tauri-plugin-tcpclient';
 
 // Listen for events
 const unlisten = await listenEvents((event) => {
