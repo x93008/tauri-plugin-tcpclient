@@ -64,9 +64,7 @@ impl<R: Runtime> Tcpclient<R> {
         }
 
         // Establish connection
-        log::info!("[{}] Connecting to {}", id, endpoint);
         let stream = TcpStream::connect(&endpoint).await?;
-        log::info!("[{}] TCP connection established", id);
         let (mut read_half, write_half) = stream.into_split();
 
         // Emit connect event
@@ -87,13 +85,10 @@ impl<R: Runtime> Tcpclient<R> {
         let endpoint_clone = endpoint.clone();
         let task = tokio::task::spawn(async move {
             let mut buf = [0u8; 65535];
-            log::info!("[{}] TCP read loop started", tcp_id);
             loop {
-                log::debug!("[{}] Waiting for data...", tcp_id);
                 match read_half.read(&mut buf).await {
                     Ok(0) => {
                         // Normal disconnect (FIN)
-                        log::info!("[{}] Connection closed by peer (FIN)", tcp_id);
                         let _ = app.emit(
                             EVENT_NAME,
                             EventPayload {
@@ -109,7 +104,6 @@ impl<R: Runtime> Tcpclient<R> {
                     }
                     Ok(len) => {
                         // Data received
-                        log::info!("[{}] Received {} bytes: {:?}", tcp_id, len, &buf[..len.min(20)]);
                         let _ = app.emit(
                             EVENT_NAME,
                             EventPayload {
@@ -120,7 +114,6 @@ impl<R: Runtime> Tcpclient<R> {
                                 },
                             },
                         );
-                        log::debug!("[{}] Message event emitted", tcp_id);
                     }
                     Err(e) => {
                         // Error occurred - handles Windows disconnect issue
